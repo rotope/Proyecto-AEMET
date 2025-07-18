@@ -10,7 +10,8 @@ def lambda_handler(event, context):
     Lambda handler - Se ejecuta cuando AWS Lambda recibe un evento
     """
     
-    #  Variables de entorno (NO .env - AWS Lambda las provee)
+    #  Variables de entorno 
+
     AEMET_API_KEY = os.environ.get('AEMET_API_KEY')
     AEMET_BASE_URL = "https://opendata.aemet.es/opendata/api"
     S3_BUCKET_NAME = "hab-bucket-prueba"
