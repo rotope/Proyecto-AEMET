@@ -641,8 +641,47 @@ elif page == "📈 Análisis Detallado":
         st.warning("⚠️ No hay datos para los filtros seleccionados")
         st.stop()
     
+    # Estadísticas detalladas (arriba y más compacta)
+    st.markdown("### 📋 Estadísticas Detalladas por Estación")
+    
+    # Añadir columna de estación primero
+    def get_season(date):
+        month = date.month
+        if month in [12, 1, 2]:
+            return "Invierno"
+        elif month in [3, 4, 5]:
+            return "Primavera"
+        elif month in [6, 7, 8]:
+            return "Verano"
+        else:
+            return "Otoño"
+    
+    filtered_df['estacion'] = filtered_df['fecha'].apply(get_season)
+    
+    # Usar columnas para hacer la tabla más compacta
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        stats_table = filtered_df.groupby('estacion')['tmed'].describe().round(2)
+        st.dataframe(stats_table, use_container_width=True)
+    
+    with col2:
+        # Información adicional sobre las estadísticas
+        st.markdown("#### � Descripción de Estadísticas")
+        st.info("""
+        **count**: Número de registros por estación
+        
+        **mean**: Temperatura media (°C)
+        
+        **std**: Desviación estándar (variabilidad)
+        
+        **min/max**: Temperaturas extremas registradas
+        
+        **25%/50%/75%**: Percentiles (cuartiles)
+        """)
+    
     # Análisis de correlaciones
-    st.markdown("### 🔗 Análisis de Correlaciones")
+    st.markdown("### �🔗 Análisis de Correlaciones")
     
     # Seleccionar columnas numéricas
     numeric_cols = filtered_df.select_dtypes(include=[np.number]).columns.tolist()
@@ -685,20 +724,6 @@ elif page == "📈 Análisis Detallado":
     
     # Análisis por estaciones del año
     st.markdown("### 🌸 Análisis Estacional")
-    
-    # Añadir columna de estación
-    def get_season(date):
-        month = date.month
-        if month in [12, 1, 2]:
-            return "Invierno"
-        elif month in [3, 4, 5]:
-            return "Primavera"
-        elif month in [6, 7, 8]:
-            return "Verano"
-        else:
-            return "Otoño"
-    
-    filtered_df['estacion'] = filtered_df['fecha'].apply(get_season)
     
     # Usar columnas para hacer el gráfico estacional más compacto
     col1, col2 = st.columns([1, 1])
@@ -747,12 +772,6 @@ elif page == "📈 Análisis Detallado":
                     f"{season_data.mean():.1f}°C",
                     delta=f"±{season_data.std():.1f}°C"
                 )
-    
-    # Tabla de estadísticas
-    st.markdown("### 📋 Estadísticas Detalladas")
-    
-    stats_table = filtered_df.groupby('estacion')['tmed'].describe().round(2)
-    st.dataframe(stats_table, use_container_width=True)
 
 # Datos por Estación
 elif page == "🌍 Datos por Estación":
