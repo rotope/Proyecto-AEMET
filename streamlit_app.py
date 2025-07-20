@@ -25,24 +25,7 @@ def get_dark_theme_css():
     return """
     <style>
         .stApp {
-         with     with col2:
-        # Información adicional sobre las estadísticas más compacta
-        st.markdown("#### 📊 Descripción de Estadísticas")
-        st.info("""
-**📈 count**: Registros por estación  
-**🌡️ mean**: Temperatura media (°C)  
-**📊 std**: Desviación estándar  
-**🔴 min/max**: Temperaturas extremas  
-**📋 25%/50%/75%**: Percentiles (Q1/Q2/Q3)
-        """) # Información adicional sobre las estadísticas más compacta
-        st.markdown("#### 📊 Descripción de Estadísticas")
-        st.info("""
-**📈 count**: Registros por estación  
-**🌡️ mean**: Temperatura media (°C)  
-**📊 std**: Desviación estándar  
-**🔴 min/max**: Temperaturas extremas  
-**📋 25%/50%/75%**: Percentiles (Q1/Q2/Q3)
-        """)und-color: #0e1117;
+            background-color: #0e1117;
             color: #fafafa;
         }
         
@@ -658,10 +641,32 @@ elif page == "📈 Análisis Detallado":
         st.warning("⚠️ No hay datos para los filtros seleccionados")
         st.stop()
     
-    # Estadísticas detalladas (arriba y más compacta)
-    st.markdown("### 📋 Estadísticas Detalladas por Estación")
+    # Análisis de correlaciones
+    st.markdown("### 🔗 Análisis de Correlaciones")
     
-    # Añadir columna de estación primero
+    # Seleccionar columnas numéricas
+    numeric_cols = filtered_df.select_dtypes(include=[np.number]).columns.tolist()
+    if 'fecha' in numeric_cols:
+        numeric_cols.remove('fecha')
+    
+    if len(numeric_cols) > 1:
+        correlation_matrix = filtered_df[numeric_cols].corr()
+        
+        fig = px.imshow(
+            correlation_matrix,
+            text_auto=True,
+            aspect="auto",
+            color_continuous_scale='RdBu',
+            title="Matriz de Correlaciones entre Variables Meteorológicas"
+        )
+        
+        fig.update_layout(height=500)
+        st.plotly_chart(fig, use_container_width=True)
+    
+    # Análisis por estaciones del año
+    st.markdown("### 🌸 Análisis Estacional")
+    
+    # Añadir columna de estación
     def get_season(date):
         month = date.month
         if month in [12, 1, 2]:
@@ -675,7 +680,39 @@ elif page == "📈 Análisis Detallado":
     
     filtered_df['estacion'] = filtered_df['fecha'].apply(get_season)
     
-    # Usar columnas para hacer la tabla más compacta
+    # Gráfico por estaciones
+    seasonal_stats = filtered_df.groupby('estacion')['tmed'].agg(['mean', 'min', 'max']).reset_index()
+    
+    fig = go.Figure()
+    
+    seasons = ["Primavera", "Verano", "Otoño", "Invierno"]
+    colors = ['#90EE90', '#FFD700', '#FFA500', '#87CEEB']
+    
+    for season, color in zip(seasons, colors):
+        season_data = seasonal_stats[seasonal_stats['estacion'] == season]
+        if not season_data.empty:
+            fig.add_trace(go.Bar(
+                name=season,
+                x=['Mínima', 'Media', 'Máxima'],
+                y=[season_data['min'].iloc[0], season_data['mean'].iloc[0], season_data['max'].iloc[0]],
+                marker_color=color
+            ))
+    
+    fig.update_layout(
+        title="Temperaturas por Estaciones del Año",
+        xaxis_title="Tipo de Temperatura",
+        yaxis_title="Temperatura (°C)",
+        barmode='group',
+        template='plotly_white',
+        height=400
+    )
+    
+    st.plotly_chart(fig, use_container_width=True)
+    
+    # Estadísticas detalladas (más compactas)
+    st.markdown("### � Estadísticas Detalladas por Estación")
+    
+    # Usar columnas para hacer la sección más compacta
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -683,112 +720,15 @@ elif page == "📈 Análisis Detallado":
         st.dataframe(stats_table, use_container_width=True)
     
     with col2:
-        # Información adicional sobre las estadísticas
-        st.markdown("#### � Descripción de Estadísticas")
+        # Información más compacta sobre las estadísticas
+        st.markdown("#### 📋 Guía de Estadísticas")
         st.info("""
-        **count**: Número de registros por estación
-        
-        **mean**: Temperatura media (°C)
-        
-        **std**: Desviación estándar (variabilidad)
-        
-        **min/max**: Temperaturas extremas registradas
-        
-        **25%/50%/75%**: Percentiles (cuartiles)
+**count**: Registros por estación  
+**mean**: Temperatura media (°C)  
+**std**: Desviación estándar  
+**min/max**: Temperaturas extremas  
+**25%/50%/75%**: Percentiles (Q1/Q2/Q3)
         """)
-    
-    # Análisis de correlaciones
-    st.markdown("### �🔗 Análisis de Correlaciones")
-    
-    # Seleccionar columnas numéricas
-    numeric_cols = filtered_df.select_dtypes(include=[np.number]).columns.tolist()
-    if 'fecha' in numeric_cols:
-        numeric_cols.remove('fecha')
-    
-    if len(numeric_cols) > 1:
-        # Usar columnas para hacer el heatmap más compacto
-        col1, col2 = st.columns([1, 1])
-        
-        with col1:
-            correlation_matrix = filtered_df[numeric_cols].corr()
-            
-            fig = px.imshow(
-                correlation_matrix,
-                text_auto=True,
-                aspect="auto",
-                color_continuous_scale='RdBu',
-                title="Matriz de Correlaciones entre Variables Meteorológicas"
-            )
-            
-            fig.update_layout(height=500)
-            st.plotly_chart(fig, use_container_width=True)
-        
-        with col2:
-            # Información adicional sobre correlaciones
-            st.markdown("#### 📊 Interpretación de Correlaciones")
-            st.info("""
-            **🔴 Rojo intenso**: Correlación negativa fuerte (-1 a -0.7)
-            
-            **⚪ Blanco**: Sin correlación (cerca de 0)
-            
-            **🔵 Azul intenso**: Correlación positiva fuerte (0.7 a 1)
-            
-            **Ejemplos típicos:**
-            - Temperatura y humedad: negativa
-            - Presión y altitud: negativa  
-            - Temperaturas máx/mín: positiva
-            """)
-    
-    # Análisis por estaciones del año
-    st.markdown("### 🌸 Análisis Estacional")
-    
-    # Usar columnas para hacer el gráfico estacional más compacto
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        # Gráfico por estaciones
-        seasonal_stats = filtered_df.groupby('estacion')['tmed'].agg(['mean', 'min', 'max']).reset_index()
-        
-        fig = go.Figure()
-        
-        seasons = ["Primavera", "Verano", "Otoño", "Invierno"]
-        colors = ['#90EE90', '#FFD700', '#FFA500', '#87CEEB']
-        
-        for season, color in zip(seasons, colors):
-            season_data = seasonal_stats[seasonal_stats['estacion'] == season]
-            if not season_data.empty:
-                fig.add_trace(go.Bar(
-                    name=season,
-                    x=['Mínima', 'Media', 'Máxima'],
-                    y=[season_data['min'].iloc[0], season_data['mean'].iloc[0], season_data['max'].iloc[0]],
-                    marker_color=color
-                ))
-        
-        fig.update_layout(
-            title="Temperaturas por Estaciones del Año",
-            xaxis_title="Tipo de Temperatura",
-            yaxis_title="Temperatura (°C)",
-            barmode='group',
-            template='plotly_white',
-            height=400
-        )
-        
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        # Información adicional sobre estaciones
-        st.markdown("#### 🌍 Información Estacional")
-        
-        # Mostrar estadísticas por estación
-        for season in ["Primavera", "Verano", "Otoño", "Invierno"]:
-            season_data = filtered_df[filtered_df['estacion'] == season]['tmed']
-            if not season_data.empty:
-                emoji = {"Primavera": "🌸", "Verano": "☀️", "Otoño": "🍂", "Invierno": "❄️"}[season]
-                st.metric(
-                    f"{emoji} {season}",
-                    f"{season_data.mean():.1f}°C",
-                    delta=f"±{season_data.std():.1f}°C"
-                )
 
 # Datos por Estación
 elif page == "🌍 Datos por Estación":
