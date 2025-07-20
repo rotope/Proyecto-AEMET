@@ -20,182 +20,110 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Selector de tema en sidebar (antes del CSS)
-if 'theme' not in st.session_state:
-    st.session_state.theme = 'light'
+# CSS personalizado para diseño profesional oscuro fijo
+def get_dark_theme_css():
+    return """
+    <style>
+        .stApp {
+            background-color: #0e1117;
+            color: #fafafa;
+        }
+        
+        .main-header {
+            text-align: center;
+            padding: 2rem 0;
+            background: linear-gradient(90deg, #1f77b4, #ff7f0e);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .metric-container {
+            background: #262730;
+            color: #fafafa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #1f77b4;
+            margin: 1rem 0;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1f77b4;
+            margin: 0;
+        }
+        
+        .metric-label {
+            font-size: 1rem;
+            color: #a0a0a0;
+            margin: 0;
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .prediction-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .info-box {
+            background: #262730;
+            color: #fafafa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #17a2b8;
+            margin: 1rem 0;
+        }
+        
+        /* Sidebar oscuro */
+        .stSidebar {
+            background-color: #262730 !important;
+        }
+        
+        .stSidebar > div {
+            background-color: #262730 !important;
+        }
+        
+        .stSidebar .stSelectbox label {
+            color: #fafafa !important;
+        }
+        
+        .stSidebar .stSelectbox > div > div {
+            background-color: #1e1e1e !important;
+            color: #fafafa !important;
+        }
+        
+        .stSidebar .stMarkdown {
+            color: #fafafa !important;
+        }
+        
+        .stDataFrame {
+            background-color: #262730;
+        }
+        
+        div[data-testid="stMetricValue"] {
+            color: #fafafa;
+        }
+    </style>
+    """
 
-with st.sidebar:
-    st.markdown("---")
-    theme_option = st.selectbox(
-        "🎨 Selecciona el tema:",
-        options=['light', 'dark'],
-        index=0 if st.session_state.theme == 'light' else 1,
-        format_func=lambda x: "🌞 Claro" if x == 'light' else "🌙 Oscuro"
-    )
-    if theme_option != st.session_state.theme:
-        st.session_state.theme = theme_option
-        st.rerun()
-
-# CSS personalizado para diseño profesional con temas
-def get_theme_css(theme):
-    if theme == 'dark':
-        return """
-        <style>
-            .stApp {
-                background-color: #0e1117;
-                color: #fafafa;
-            }
-            
-            .main-header {
-                text-align: center;
-                padding: 2rem 0;
-                background: linear-gradient(90deg, #1f77b4, #ff7f0e);
-                color: white;
-                border-radius: 10px;
-                margin-bottom: 2rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            }
-            
-            .metric-container {
-                background: #262730;
-                color: #fafafa;
-                padding: 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-                border-left: 4px solid #1f77b4;
-                margin: 1rem 0;
-            }
-            
-            .metric-value {
-                font-size: 2.5rem;
-                font-weight: bold;
-                color: #1f77b4;
-                margin: 0;
-            }
-            
-            .metric-label {
-                font-size: 1rem;
-                color: #a0a0a0;
-                margin: 0;
-            }
-            
-            .weather-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 1.5rem;
-                border-radius: 15px;
-                margin: 1rem 0;
-                text-align: center;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            }
-            
-            .prediction-card {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                color: white;
-                padding: 1.5rem;
-                border-radius: 15px;
-                margin: 1rem 0;
-                text-align: center;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            }
-            
-            .info-box {
-                background: #262730;
-                color: #fafafa;
-                padding: 1rem;
-                border-radius: 8px;
-                border-left: 4px solid #17a2b8;
-                margin: 1rem 0;
-            }
-            
-            .sidebar .sidebar-content {
-                background: linear-gradient(180deg, #262730 0%, #1e1e1e 100%);
-            }
-            
-            .stDataFrame {
-                background-color: #262730;
-            }
-            
-            div[data-testid="stMetricValue"] {
-                color: #fafafa;
-            }
-        </style>
-        """
-    else:
-        return """
-        <style>
-            .main-header {
-                text-align: center;
-                padding: 2rem 0;
-                background: linear-gradient(90deg, #1f77b4, #ff7f0e);
-                color: white;
-                border-radius: 10px;
-                margin-bottom: 2rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            }
-            
-            .metric-container {
-                background: white;
-                padding: 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                border-left: 4px solid #1f77b4;
-                margin: 1rem 0;
-            }
-            
-            .metric-value {
-                font-size: 2.5rem;
-                font-weight: bold;
-                color: #1f77b4;
-                margin: 0;
-            }
-            
-            .metric-label {
-                font-size: 1rem;
-                color: #666;
-                margin: 0;
-            }
-            
-            .weather-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 1.5rem;
-                border-radius: 15px;
-                margin: 1rem 0;
-                text-align: center;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            }
-            
-            .prediction-card {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                color: white;
-                padding: 1.5rem;
-                border-radius: 15px;
-                margin: 1rem 0;
-                text-align: center;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            }
-            
-            .info-box {
-                background: #f8f9fa;
-                padding: 1rem;
-                border-radius: 8px;
-                border-left: 4px solid #17a2b8;
-                margin: 1rem 0;
-            }
-            
-            .stSelectbox > div > div {
-                background-color: white;
-                border-radius: 8px;
-            }
-            
-            .sidebar .sidebar-content {
-                background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-            }
-        </style>
-        """
-
-st.markdown(get_theme_css(st.session_state.theme), unsafe_allow_html=True)
+st.markdown(get_dark_theme_css(), unsafe_allow_html=True)
 
 # Funciones de conexión y datos
 @st.cache_resource
