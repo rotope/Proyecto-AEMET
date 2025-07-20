@@ -103,10 +103,60 @@ def get_dark_theme_css():
         
         .stDataFrame {
             background-color: #262730;
+            border-radius: 10px !important;
         }
         
         div[data-testid="stMetricValue"] {
             color: #fafafa;
+        }
+        
+        /* Esquinas redondeadas para gráficos y componentes */
+        .stPlotlyChart {
+            border-radius: 15px !important;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stMarkdown {
+            border-radius: 10px;
+        }
+        
+        .stInfo {
+            border-radius: 10px !important;
+            border-left: 4px solid #17a2b8 !important;
+        }
+        
+        .stSuccess {
+            border-radius: 10px !important;
+            border-left: 4px solid #28a745 !important;
+        }
+        
+        .stWarning {
+            border-radius: 10px !important;
+            border-left: 4px solid #ffc107 !important;
+        }
+        
+        .stError {
+            border-radius: 10px !important;
+            border-left: 4px solid #dc3545 !important;
+        }
+        
+        .stSelectbox > div > div {
+            border-radius: 8px !important;
+        }
+        
+        .stSlider > div {
+            border-radius: 8px !important;
+        }
+        
+        .stButton > button {
+            border-radius: 10px !important;
+            transition: all 0.3s ease;
+        }
+        
+        .stButton > button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
     """
@@ -274,10 +324,25 @@ st.markdown("""
 # Sidebar
 st.sidebar.markdown("## 🎛️ Panel de Control")
 
-page = st.sidebar.selectbox(
-    "Selecciona una sección:",
-    ["📊 Dashboard Principal", "🔮 Predicciones IA", "📈 Análisis Detallado", "🌍 Datos por Estación"]
-)
+# Inicializar página por defecto si no existe
+if 'page' not in st.session_state:
+    st.session_state.page = "📊 Dashboard Principal"
+
+# Botones de navegación
+if st.sidebar.button("📊 Dashboard Principal", use_container_width=True):
+    st.session_state.page = "📊 Dashboard Principal"
+
+if st.sidebar.button("🔮 Predicciones IA", use_container_width=True):
+    st.session_state.page = "🔮 Predicciones IA"
+
+if st.sidebar.button("📈 Análisis Detallado", use_container_width=True):
+    st.session_state.page = "📈 Análisis Detallado"
+
+if st.sidebar.button("🌍 Datos por Estación", use_container_width=True):
+    st.session_state.page = "🌍 Datos por Estación"
+
+# Usar la página del estado
+page = st.session_state.page
 
 # Cargar datos
 with st.spinner("🔄 Cargando datos meteorológicos..."):
