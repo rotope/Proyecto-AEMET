@@ -25,7 +25,24 @@ def get_dark_theme_css():
     return """
     <style>
         .stApp {
-            background-color: #0e1117;
+         with     with col2:
+        # Información adicional sobre las estadísticas más compacta
+        st.markdown("#### 📊 Descripción de Estadísticas")
+        st.info("""
+**📈 count**: Registros por estación  
+**🌡️ mean**: Temperatura media (°C)  
+**📊 std**: Desviación estándar  
+**🔴 min/max**: Temperaturas extremas  
+**📋 25%/50%/75%**: Percentiles (Q1/Q2/Q3)
+        """) # Información adicional sobre las estadísticas más compacta
+        st.markdown("#### 📊 Descripción de Estadísticas")
+        st.info("""
+**📈 count**: Registros por estación  
+**🌡️ mean**: Temperatura media (°C)  
+**📊 std**: Desviación estándar  
+**🔴 min/max**: Temperaturas extremas  
+**📋 25%/50%/75%**: Percentiles (Q1/Q2/Q3)
+        """)und-color: #0e1117;
             color: #fafafa;
         }
         
