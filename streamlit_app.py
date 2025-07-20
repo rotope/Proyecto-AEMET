@@ -618,7 +618,7 @@ elif page == "📈 Análisis Detallado":
     
     filtered_df['estacion'] = filtered_df['fecha'].apply(get_season)
     
-    # 1. ESTADÍSTICAS DETALLADAS - ANCHO COMPLETO ARRIBA
+    # 1. ESTADÍSTICAS DETALLADAS
     st.markdown("### 📊 Estadísticas Detalladas por Estación")
     
     col1, col2 = st.columns([1, 1])
@@ -635,7 +635,7 @@ elif page == "📈 Análisis Detallado":
 **25%/50%/75%**: Percentiles (Q1/Q2/Q3)
         """)
     
-    # 2. ANÁLISIS DE CORRELACIONES - 50% ANCHO MEDIO
+    # 2. ANÁLISIS DE CORRELACIONES
     col1, col2 = st.columns([1, 1])
     
     with col1:
@@ -673,8 +673,8 @@ elif page == "📈 Análisis Detallado":
 - Presión y altitud: negativa  
 - Temperaturas máx/mín: positiva
         """)
-    
-    # 3. ANÁLISIS ESTACIONAL - 50% ANCHO DEBAJO
+
+    # 3. ANÁLISIS ESTACIONAL
     col1, col2 = st.columns([1, 1])
     
     with col1:
