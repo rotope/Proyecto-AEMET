@@ -3,10 +3,21 @@ import numpy as np
 import datetime
 import os
 import psycopg2
+import boto3
 
-# Cargar modelo al iniciar el script
-MODELO_PATH = os.path.join(os.path.dirname(__file__), "modelo_lstm_temperatura.keras")
-modelo = tf.keras.models.load_model(MODELO_PATH)
+# Parámetros de S3
+BUCKET_NAME = "proyectofinalhab"
+OBJECT_KEY = "carpeta/nombre_modelo.keras"  # ruta dentro del bucket
+LOCAL_MODEL_PATH = "/tmp/nombre_modelo.keras"
+
+
+s3 = boto3.client("s3")
+
+# Descargar el modelo desde S3
+s3.download_file(BUCKET_NAME, OBJECT_KEY, LOCAL_MODEL_PATH)
+
+# Cargar el modelo desde el archivo descargado
+modelo = tf.keras.models.load_model(LOCAL_MODEL_PATH)
 
 def obtener_datos_historicos(ubicacion: str, dias: int = 20):
     try:
