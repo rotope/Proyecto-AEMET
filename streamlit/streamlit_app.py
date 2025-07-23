@@ -183,7 +183,7 @@ def init_s3_client():
         AWS_SECRET_ACCESS_KEY = st.secrets.get("AWS_SECRET_ACCESS_KEY", "")
         
         if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
-            st.error("⚠️ Credenciales AWS no configuradas.")
+            st.error("⚠ Credenciales AWS no configuradas.")
             return None
         
         s3_client = boto3.client(
@@ -349,12 +349,12 @@ with st.spinner("🔄 Cargando datos meteorológicos..."):
     weather_df = load_weather_data()
     
     if weather_df is None:
-        st.warning("⚠️ No se pudo conectar con S3, cargando datos locales...")
+        st.warning(" No se pudo conectar con S3, cargando datos locales...")
         weather_df = load_local_data()
 
 if weather_df is None:
-    st.error("❌ No se pudieron cargar los datos meteorológicos")
-    st.info("💡 Verifica tu conexión a AWS S3 o que tengas archivos JSON locales")
+    st.error(" No se pudieron cargar los datos meteorológicos")
+    st.info(" Verifica tu conexión a AWS S3 o que tengas archivos JSON locales")
     st.stop()
 
 st.success(f"✅ Datos cargados correctamente: {len(weather_df):,} registros de {weather_df['nombre'].nunique()} estaciones")
@@ -494,14 +494,14 @@ if page == "📊 Dashboard Principal":
 elif page == "🔮 Predicciones IA":
     st.markdown("## 🔮 Predicciones con Inteligencia Artificial")
     
-    with st.spinner("🤖 Cargando modelo LSTM..."):
+    with st.spinner("Cargando modelo LSTM..."):
         model = load_lstm_model()
     
     if model is None:
-        st.error("❌ No se pudo cargar el modelo LSTM")
+        st.error("No se pudo cargar el modelo LSTM")
         st.stop()
     
-    st.success("✅ Modelo LSTM cargado correctamente")
+    st.success("Modelo LSTM cargado correctamente")
     
     sequence, scaler = prepare_data_for_prediction(weather_df)
     
@@ -570,9 +570,9 @@ elif page == "🔮 Predicciones IA":
                     </div>
                     """, unsafe_allow_html=True)
         else:
-            st.error("❌ Error generando predicciones")
+            st.error("Error generando predicciones")
     else:
-        st.error("❌ No hay suficientes datos para realizar predicciones")
+        st.error("No hay suficientes datos para realizar predicciones")
 
 # Análisis Detallado - CON TU LAYOUT EXACTO
 elif page == "📈 Análisis Detallado":
@@ -613,7 +613,7 @@ elif page == "📈 Análisis Detallado":
         ]
     
     if filtered_df.empty:
-        st.warning("⚠️ No hay datos para los filtros seleccionados")
+        st.warning("No hay datos para los filtros seleccionados")
         st.stop()
     
     filtered_df['estacion'] = filtered_df['fecha'].apply(get_season)
@@ -834,9 +834,9 @@ elif page == "🌍 Datos por Estación":
             stats = station_data.select_dtypes(include=[np.number]).describe().round(2)
             st.dataframe(stats, use_container_width=True)
         else:
-            st.warning("⚠️ No hay datos disponibles para esta estación")
+            st.warning("No hay datos disponibles para esta estación")
     else:
-        st.error("❌ No se encontraron datos de estaciones meteorológicas")
+        st.error("No se encontraron datos de estaciones meteorológicas")
 
 # Footer
 st.markdown("---")
