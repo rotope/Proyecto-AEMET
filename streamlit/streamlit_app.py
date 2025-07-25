@@ -183,7 +183,7 @@ def init_s3_client():
         AWS_SECRET_ACCESS_KEY = st.secrets.get("AWS_SECRET_ACCESS_KEY", "")
         
         if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
-            st.error("⚠ Credenciales AWS no configuradas.")
+            st.error("Credenciales AWS no configuradas.")
             return None
         
         s3_client = boto3.client(
