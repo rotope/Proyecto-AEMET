@@ -199,14 +199,14 @@ def init_s3_client():
         return None
 
 @st.cache_data(ttl=3600)
-def load_weather_data(bucket_name='proyectofinalhab'):
+def load_weather_data(bucket_name='aemet-raw'):
     """Cargar datos meteorológicos desde S3"""
     s3_client = init_s3_client()
     if not s3_client:
         return None
     
     try:
-        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix='data/raw/aemet-semanal/')
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix='data/aemet-diarios/')
         
         all_data = []
         for obj in response.get('Contents', []):
@@ -237,7 +237,7 @@ def load_weather_data(bucket_name='proyectofinalhab'):
 def load_local_data():
     """Cargar datos locales como fallback"""
     try:
-        local_files = ['2025-07-15.json']
+        local_files = []
         all_data = []
         
         for file_name in local_files:
