@@ -357,7 +357,7 @@ if weather_df is None:
     st.info(" Verifica tu conexión a AWS S3 o que tengas archivos JSON locales")
     st.stop()
 
-st.success(f"✅ Datos cargados correctamente: {len(weather_df):,} registros de {weather_df['nombre'].nunique()} estaciones")
+st.success(f"Datos cargados correctamente: {len(weather_df):,} registros de {weather_df['nombre'].nunique()} estaciones")
 
 # Dashboard Principal
 if page == "📊 Dashboard Principal":
