@@ -820,14 +820,6 @@ elif page == "🌍 Datos por Estación":
             with col2:
                 if 'hrMedia' in station_data.columns:
                     st.info(f"💧 **Humedad Media**: {station_data['hrMedia'].mean():.1f}%")
-                if 'velmedia' in station_data.columns:
-                    st.info(f"💨 **Viento Medio**: {station_data['velmedia'].mean():.1f} km/h")
-            
-            with col3:
-                if 'presMax' in station_data.columns:
-                    st.info(f"🌪️ **Presión Máx**: {station_data['presMax'].max():.1f} hPa")
-                if 'presMin' in station_data.columns:
-                    st.info(f"🌪️ **Presión Mín**: {station_data['presMin'].min():.1f} hPa")
             
             # Estadísticas detalladas
             st.markdown("### 📊 Estadísticas Detalladas")
