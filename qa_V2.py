@@ -3,16 +3,11 @@ import google.generativeai as genai
 import psycopg2
 import pandas as pd
 
-# Es una buena práctica cargar las variables de entorno al inicio.
-# Si usas un archivo .env, puedes usar la librería python-dotenv.
 # from dotenv import load_dotenv
 # load_dotenv()
 
 class GeminiAssistant:
-    # CORRECCIÓN: El constructor debe llamarse __init__ (con dobles guiones bajos).
-    # Un error común es escribir _init_ (simple), lo que causa que no se ejecute
-    # al crear el objeto, provocando el error "'GeminiAssistant' object has no attribute 'model'".
-    def __init__(self):
+     def __init__(self):
         """
         Inicializa el asistente, configurando la API de Gemini
         y los parámetros de conexión a la base de datos PostgreSQL.
@@ -174,3 +169,4 @@ if __name__ == '__main__':
     
 
     """
+
