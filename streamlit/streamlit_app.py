@@ -592,7 +592,7 @@ elif page == "📈 Análisis Detallado":
         provinces = st.sidebar.multiselect(
             "Provincias:",
             options=sorted(weather_df['provincia'].unique()),
-            default=list(weather_df['provincia'].unique())[:5]
+            default=list(weather_df['provincia'].unique())[:1]
         )
         
         if provinces:
