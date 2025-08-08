@@ -579,32 +579,34 @@ elif page == "📈 Análisis Detallado":
     st.markdown("## 📈 Análisis Meteorológico Detallado")
     
     # Filtros
-    st.sidebar.markdown("### 🔍 Filtros de Análisis")
-    
-    date_range = st.sidebar.date_input(
-        "Rango de fechas:",
-        value=(weather_df['fecha'].min(), weather_df['fecha'].max()),
-        min_value=weather_df['fecha'].min(),
-        max_value=weather_df['fecha'].max()
+st.sidebar.markdown("### 🔍 Filtros de Análisis")
+
+date_range = st.sidebar.date_input(
+    "Rango de fechas:",
+    value=(weather_df['fecha'].min(), weather_df['fecha'].max()),
+    min_value=weather_df['fecha'].min(),
+    max_value=weather_df['fecha'].max()
+)
+
+if 'provincia' in weather_df.columns:
+    provincia = st.sidebar.selectbox(
+        "Provincia:",
+        options=sorted(weather_df['provincia'].unique()),
+        index=0
     )
-        if 'provincia' in weather_df.columns:
-            provincia = st.sidebar.selectbox(
-                "Provincia:",
-                options=sorted(weather_df['provincia'].unique()),
-                index=0
-            )
-        
-        if provinces:
-            filtered_df = weather_df[
-                (weather_df['fecha'] >= pd.to_datetime(date_range[0])) &
-                (weather_df['fecha'] <= pd.to_datetime(date_range[1])) &
-                (weather_df['provincia'].isin(provinces))
-            ]
-        else:
-            filtered_df = weather_df[
-                (weather_df['fecha'] >= pd.to_datetime(date_range[0])) &
-                (weather_df['fecha'] <= pd.to_datetime(date_range[1]))
-            ]
+    
+    # Aplicar filtros con la provincia seleccionada
+    filtered_df = weather_df[
+        (weather_df['fecha'] >= pd.to_datetime(date_range[0])) &
+        (weather_df['fecha'] <= pd.to_datetime(date_range[1])) &
+        (weather_df['provincia'] == provincia)  # Cambiado de .isin() a ==
+    ]
+else:
+    # Aplicar solo filtros de fecha si no hay columna provincia
+    filtered_df = weather_df[
+        (weather_df['fecha'] >= pd.to_datetime(date_range[0])) &
+        (weather_df['fecha'] <= pd.to_datetime(date_range[1]))
+    ]
     else:
         filtered_df = weather_df[
             (weather_df['fecha'] >= pd.to_datetime(date_range[0])) &
