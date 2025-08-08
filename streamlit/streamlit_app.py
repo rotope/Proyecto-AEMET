@@ -678,7 +678,7 @@ elif page == "📈 Análisis Detallado":
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.markdown("### 🌸 Análisis Estacional")
+        st.markdown("###  Análisis Estacional")
         
         seasonal_stats = filtered_df.groupby('estacion')['tmed'].agg(['mean', 'min', 'max']).reset_index()
         
