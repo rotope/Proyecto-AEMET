@@ -588,12 +588,12 @@ elif page == "📈 Análisis Detallado":
         max_value=weather_df['fecha'].max()
     )
     
-    if 'provincia' in weather_df.columns:
-        provinces = st.sidebar.multiselect(
-            "Provincias:",
-            options=sorted(weather_df['provincia'].unique()),
-            default=list(weather_df['provincia'].unique())[:1]
-        )
+   if 'provincia' in weather_df.columns:
+    provincia = st.sidebar.selectbox(
+        "Provincia:",
+        options=sorted(weather_df['provincia'].unique()),
+        index=0
+    )
         
         if provinces:
             filtered_df = weather_df[
