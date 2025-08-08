@@ -33,7 +33,9 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 
 1. Clonar el Repositorio
+   
 	git clone <URL_DE_TU_REPOSITORIO>
+ 
 	cd <nombre_de_tu_repositorio>
 
 2. Configurar el Entorno Virtual
