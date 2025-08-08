@@ -588,7 +588,7 @@ elif page == "📈 Análisis Detallado":
         max_value=weather_df['fecha'].max()
     )
         if 'provincia' in weather_df.columns:
-    provincia = st.sidebar.selectbox(
+        provincia = st.sidebar.selectbox(
         "Provincia:",
         options=sorted(weather_df['provincia'].unique()),
         index=0
