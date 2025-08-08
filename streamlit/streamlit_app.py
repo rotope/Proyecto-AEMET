@@ -821,7 +821,7 @@ elif page == "🌍 Datos por Estación":
                 if 'hrMedia' in station_data.columns:
                     st.info(f"💧 **Humedad Media**: {station_data['hrMedia'].mean():.1f}%")
                 if 'hrMedia' in station_data.columns:
-                    st.info(f"☀️ **Temperatura Media**: {station_data['tmed'].mean():.1f}%")    
+                    st.info(f"☀️ **Temperatura Media**: {station_data['tmed'].mean():.1f}")    
             
             # Estadísticas detalladas
             st.markdown("### 📊 Estadísticas Detalladas")
