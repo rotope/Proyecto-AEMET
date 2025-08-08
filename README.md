@@ -53,73 +53,73 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    		Nota: Para un entorno de producción, se recomienda usar un método más seguro para gestionar estas variables, como AWS Secrets Manager o un archivo .env cargado de forma segura.
 
-5. Iniciar la Aplicación
+4. Iniciar la Aplicación
 
-Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
-
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
-
-#Si todo está configurado correctamente, verás en la consola que los modelos se cargan desde S3 y que la aplicación se inicia sin errores.
+	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
+	
+	uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
+	
+	#Si todo está configurado correctamente, verás en la consola que los modelos se cargan desde S3 y que la aplicación se inicia sin errores.
 
 🧪 Uso de la API
 
 Una vez que la API está funcionando, puedes interactuar con ella a través de dos endpoints principales.
 
-Streamlit APP:
-	(Provisional) https://proyecto-aemet-mun7ecniqswapp7s9ljznnz.streamlit.app/  
-
-Desde Consola:
-	Endpoint 1: Predicción de Temperatura
-
-	Este endpoint toma una ubicación y un número de días para predecir la temperatura.
-
-   			Ruta: /forecast
-
-    		Método: POST
-
-    		Payload: JSON con los campos ubicacion (string) y dias (integer).
-
-	Ejemplo de uso con curl:
-
-	curl -X POST "http://<IP_PUBLICA_EC2>:8000/forecast" \
-	-H "Content-Type: application/json" \
-	-d '{"ubicacion": "Madrid", "dias": 5}'
-
-	Respuesta esperada (JSON):
-
-	{
-  	"ubicacion": "Madrid",
-  	"pronostico": [
-   	 { "fecha": "2025-08-08", "temperatura": 25.5 },
-   	 { "fecha": "2025-08-09", "temperatura": 26.1 },
-   	 { "fecha": "2025-08-10", "temperatura": 25.9 },
-    	 { "fecha": "2025-08-11", "temperatura": 26.3 },
-         { "fecha": "2025-08-12", "temperatura": 26.8 }
-  							]
-								}
-
-	Endpoint 2: Asistente de Consultas
-
-	Este endpoint te permite hacer preguntas sobre los datos históricos.
-
-   		Ruta: /ask
-
-    		Método: POST
-
-   		Payload: JSON con el campo question (string).
-
-	Ejemplo de uso con curl:
-
-	curl -X POST "http://<IP_PUBLICA_EC2>:8000/ask" \
-	-H "Content-Type: application/json" \
-	-d '{"question": "Cuál fue la temperatura media en Madrid en mayo de 2024?"}'
-
-	Respuesta esperada (JSON):
-
-	{
- 	 "respuesta": "La temperatura media en Madrid en mayo de 2024 fue de 21.5 grados Celsius.",
-  	"sql_generada": "SELECT AVG(tmed) FROM datos_clima WHERE nombre = 'Madrid' AND fecha BETWEEN '2024-05-01' AND '2024-05-31'"
-	}
+	Streamlit APP:
+		(Provisional) https://proyecto-aemet-mun7ecniqswapp7s9ljznnz.streamlit.app/  
+	
+	Desde Consola:
+		Endpoint 1: Predicción de Temperatura
+	
+		Este endpoint toma una ubicación y un número de días para predecir la temperatura.
+	
+	   			Ruta: /forecast
+	
+	    		Método: POST
+	
+	    		Payload: JSON con los campos ubicacion (string) y dias (integer).
+	
+		Ejemplo de uso con curl:
+	
+		curl -X POST "http://<IP_PUBLICA_EC2>:8000/forecast" \
+		-H "Content-Type: application/json" \
+		-d '{"ubicacion": "Madrid", "dias": 5}'
+	
+		Respuesta esperada (JSON):
+	
+		{
+	  	"ubicacion": "Madrid",
+	  	"pronostico": [
+	   	 { "fecha": "2025-08-08", "temperatura": 25.5 },
+	   	 { "fecha": "2025-08-09", "temperatura": 26.1 },
+	   	 { "fecha": "2025-08-10", "temperatura": 25.9 },
+	    	 { "fecha": "2025-08-11", "temperatura": 26.3 },
+	         { "fecha": "2025-08-12", "temperatura": 26.8 }
+	  							]
+									}
+	
+		Endpoint 2: Asistente de Consultas
+	
+		Este endpoint te permite hacer preguntas sobre los datos históricos.
+	
+	   		Ruta: /ask
+	
+	    		Método: POST
+	
+	   		Payload: JSON con el campo question (string).
+	
+		Ejemplo de uso con curl:
+	
+		curl -X POST "http://<IP_PUBLICA_EC2>:8000/ask" \
+		-H "Content-Type: application/json" \
+		-d '{"question": "Cuál fue la temperatura media en Madrid en mayo de 2024?"}'
+	
+		Respuesta esperada (JSON):
+	
+		{
+	 	 "respuesta": "La temperatura media en Madrid en mayo de 2024 fue de 21.5 grados Celsius.",
+	  	"sql_generada": "SELECT AVG(tmed) FROM datos_clima WHERE nombre = 'Madrid' AND fecha BETWEEN '2024-05-01' AND '2024-05-31'"
+		}
 
 
 ## 🤝 Contribuciones
