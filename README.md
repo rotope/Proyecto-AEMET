@@ -44,7 +44,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 	pip install -r requirements.txt
 
-4. Configurar las Variables de Entorno
+3. Configurar las Variables de Entorno
 	El proyecto usa variables de entorno para conectarse a la base de datos PostgreSQL. Debes definirlas en tu terminal antes de iniciar la aplicación.
 	Reemplaza los valores de ejemplo con tus credenciales reales:
 
@@ -56,7 +56,7 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
    		Nota: Para un entorno de producción, se recomienda usar un método más seguro para gestionar estas variables, como AWS Secrets Manager o un archivo .env cargado de forma segura.
 
-5. Iniciar la Aplicación
+4. Iniciar la Aplicación
 
 	Una vez que las variables de entorno están configuradas, puedes iniciar el servidor Uvicorn. Es importante usar el flag --workers 1 para la carga de modelos.
 	
