@@ -68,9 +68,9 @@ Sigue estos pasos para poner el proyecto en marcha en tu entorno local o en una 
 
 🧪 Uso de la API
 
-Una vez que la API está funcionando, puedes interactuar con ella a través de dos endpoints principales.
+Una vez que la API está funcionando, puedes interactuar con ella a través de dos endpoints principales: Forecast(para predicciones) y Ask(para recibir información de históricos)
 
-	Streamlit APP:
+	Desde Streamlit APP:
 		(Provisional) https://proyecto-aemet-mun7ecniqswapp7s9ljznnz.streamlit.app/  
 	
 	Desde Consola:
@@ -117,7 +117,7 @@ Una vez que la API está funcionando, puedes interactuar con ella a través de d
 	
 		curl -X POST "http://<IP_PUBLICA_EC2>:8000/ask" \
 		-H "Content-Type: application/json" \
-		-d '{"question": "Cuál fue la temperatura media en Madrid en mayo de 2024?"}'
+		-d '{"pregunta": "Cuál fue la temperatura media en Madrid en mayo de 2024?"}'
 	
 		Respuesta esperada (JSON):
 	
