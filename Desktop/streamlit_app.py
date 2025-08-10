@@ -16,7 +16,6 @@ import os
 from dotenv import load_dotenv
 warnings.filterwarnings('ignore')
 
-
 # Cargar variables de entorno
 load_dotenv()
 
@@ -1398,7 +1397,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 return output
         
         # Interfaz de usuario para predicción
-        pred_col1, pred_col3 = st.columns([1, 1])
+        pred_col1, pred_col2, pred_col3 = st.columns([1, 1, 1])
         
         with pred_col1:
             dias_prediccion = st.selectbox(
@@ -1408,75 +1407,30 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                 help="Número de días futuros a predecir"
             )
         
+        with pred_col2:
+            confianza_nivel = st.slider(
+                "📊 Nivel de confianza:",
+                min_value=80,
+                max_value=99,
+                value=95,
+                step=5,
+                help="Nivel de confianza para intervalos de predicción"
+            )
         
-        #with pred_col3:
-            #validacion_avanzada = (
-                #"🔍 Validación avanzada",
-                
-                
-           # )
+        with pred_col3:
+            validacion_avanzada = st.checkbox(
+                "🔍 Validación avanzada",
+                value=True,
+                help="Realizar validaciones adicionales de calidad"
+            )
         
         # Botón de predicción
         if st.button("🚀 Generar Predicción Profesional", type="primary", use_container_width=True):
             with st.spinner("🔄 Cargando modelo y procesando datos..."):
                 try:
-                    # === 1. CARGA DEL MODELO CON RUTAS CORREGIDAS ===
+                    # === 1. CARGA DEL MODELO ===
                     device = torch.device('cpu')
-                    
-                    # Buscar archivos en múltiples ubicaciones posibles
-                    model_paths = [
-                        'production_weather_model.pth',  # Local
-                        'streamlit/production_weather_model.pth',  # Streamlit Cloud
-                        './streamlit/production_weather_model.pth'  # Alternativa
-                    ]
-                    
-                    scaler_x_paths = [
-                        'scaler_X_production.joblib',
-                        'streamlit/scaler_X_production.joblib',
-                        './streamlit/scaler_X_production.joblib'
-                    ]
-                    
-                    scaler_y_paths = [
-                        'scaler_y_production.joblib',
-                        'streamlit/scaler_y_production.joblib',
-                        './streamlit/scaler_y_production.joblib'
-                    ]
-                    
-                    # Encontrar rutas válidas
-                    model_path = None
-                    scaler_x_path = None
-                    scaler_y_path = None
-                    
-                    for path in model_paths:
-                        if os.path.exists(path):
-                            model_path = path
-                            break
-                    
-                    for path in scaler_x_paths:
-                        if os.path.exists(path):
-                            scaler_x_path = path
-                            break
-                            
-                    for path in scaler_y_paths:
-                        if os.path.exists(path):
-                            scaler_y_path = path
-                            break
-                    
-                    if not all([model_path, scaler_x_path, scaler_y_path]):
-                        missing = []
-                        if not model_path: missing.append("production_weather_model.pth")
-                        if not scaler_x_path: missing.append("scaler_X_production.joblib")
-                        if not scaler_y_path: missing.append("scaler_y_production.joblib")
-                        
-                        st.error(f"❌ Archivos no encontrados: {', '.join(missing)}")
-                        st.info(f"📁 Directorio actual: {os.getcwd()}")
-                        st.info(f"📋 Archivos disponibles: {os.listdir('.')}")
-                        return
-                    
-                   
-                    
-                    # Cargar modelo y scalers
-                    checkpoint = torch.load(model_path, map_location=device)
+                    checkpoint = torch.load('production_weather_model.pth', map_location=device)
                     
                     # Crear modelo con arquitectura exacta del entrenamiento
                     config = checkpoint.get('config', {})
@@ -1496,8 +1450,8 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                     model.eval()
                     
                     # Cargar scalers
-                    scaler_X = joblib.load(scaler_x_path)
-                    scaler_y = joblib.load(scaler_y_path)
+                    scaler_X = joblib.load('scaler_X_production.joblib')
+                    scaler_y = joblib.load('scaler_y_production.joblib')
                     
                     # Features del modelo
                     model_features = checkpoint['features']
@@ -1668,8 +1622,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                             
                                             # Predicción del modelo
                                             with torch.no_grad():
-                                                pred_tensor = model(X_pred).cpu()
-                                                pred_scaled = float(pred_tensor.item())
+                                                pred_scaled = model(X_pred).cpu().numpy()[0, 0]
                                             
                                             # Desnormalizar predicción
                                             pred_temp = scaler_y.inverse_transform([[pred_scaled]])[0, 0]
@@ -1699,7 +1652,13 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                                     torch.FloatTensor(new_day_scaled).unsqueeze(0).unsqueeze(0)
                                                 ], dim=1)
                                 
+                                # === 6. CÁLCULO DE INTERVALOS DE CONFIANZA ===
+                                # Basado en la desviación estándar del error del modelo
+                                model_std = 1.89  # RMSE del modelo
+                                z_score = 1.96 if confianza_nivel == 95 else (2.58 if confianza_nivel == 99 else 1.645)
                                 
+                                intervalos_inf = [pred - z_score * model_std for pred in predicciones]
+                                intervalos_sup = [pred + z_score * model_std for pred in predicciones]
                                 
                                 # === 7. PRESENTACIÓN DE RESULTADOS ===
                                 
@@ -1707,7 +1666,8 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 df_prediccion = pd.DataFrame({
                                     'Fecha': fechas_pred,
                                     'Temperatura_Predicha': [round(p, 1) for p in predicciones],
-                                   
+                                    'Limite_Inferior': [round(inf, 1) for inf in intervalos_inf],
+                                    'Limite_Superior': [round(sup, 1) for sup in intervalos_sup]
                                 })
                                 
                                 # Métricas de resumen
@@ -1756,9 +1716,26 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     marker=dict(size=8, symbol='star')
                                 ))
                                 
-                            
+                                # Intervalo de confianza
+                                fig_pred.add_trace(go.Scatter(
+                                    x=df_prediccion['Fecha'],
+                                    y=df_prediccion['Limite_Superior'],
+                                    mode='lines',
+                                    line=dict(width=0),
+                                    showlegend=False,
+                                    hoverinfo='skip'
+                                ))
                                 
-                                
+                                fig_pred.add_trace(go.Scatter(
+                                    x=df_prediccion['Fecha'],
+                                    y=df_prediccion['Limite_Inferior'],
+                                    mode='lines',
+                                    line=dict(width=0),
+                                    fill='tonexty',
+                                    fillcolor='rgba(255, 107, 107, 0.2)',
+                                    name=f'📊 Confianza {confianza_nivel}%',
+                                    hoverinfo='skip'
+                                ))
                                 
                                 fig_pred.update_layout(
                                     title=dict(
@@ -1791,16 +1768,13 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                 
                                 # Tabla de resultados detallados
                                 st.markdown("#### 📋 Resultados Detallados")
-                                
-                                # Crear DataFrame con formato mejorado
-                                df_display = df_prediccion.copy()
-                                df_display['Temperatura_Predicha'] = df_display['Temperatura_Predicha'].apply(lambda x: f"{x:.1f}°C")
-                                df_display['Fecha'] = df_display['Fecha'].dt.strftime('%d/%m/%Y')
-                                
                                 st.dataframe(
-                                    df_display,
-                                    use_container_width=True,
-                                    hide_index=True
+                                    df_prediccion.style.format({
+                                        'Temperatura_Predicha': '{:.1f}°C',
+                                        'Limite_Inferior': '{:.1f}°C',
+                                        'Limite_Superior': '{:.1f}°C'
+                                    }).background_gradient(subset=['Temperatura_Predicha'], cmap='RdYlBu_r'),
+                                    use_container_width=True
                                 )
                                 
                                 # Información del modelo
@@ -1818,7 +1792,7 @@ def create_ultra_charts(df, station='Estación específica', days=90, show_trend
                                     **⚡ Configuración:**
                                     - Secuencia entrada: 90 días
                                     - Predicción: Iterativa día a día
-                                   
+                                    - Confianza: {confianza_nivel}%
                                     
                                     **📈 Features utilizadas:** {', '.join(model_features)}
                                     """)
@@ -2047,19 +2021,10 @@ def main():
         st.markdown("## 🤖 Asistente de Consultas con IA")
         st.info("Pregunta al asistente sobre los datos históricos del clima. Por ejemplo: '¿Cuál fue la temperatura media en Madrid en mayo de 2023?'")
         
-        # Inicializar el estado si no existe
-        if 'selected_example' not in st.session_state:
-            st.session_state.selected_example = ""
-        
-        # Usar el valor del ejemplo seleccionado si existe
-        default_value = st.session_state.selected_example if st.session_state.selected_example else ""
-        
-        pregunta = st.text_input("Haz tu pregunta aquí:", value=default_value, placeholder="Ejemplo: ¿Cuál fue la precipitación total en Valencia en 2022?")
+        pregunta = st.text_input("Haz tu pregunta aquí:", key="ask_input", placeholder="Ejemplo: ¿Cuál fue la precipitación total en Valencia en 2022?")
 
         if st.button("Hacer Pregunta", type="primary", use_container_width=True):
             if pregunta:
-                # Limpiar el ejemplo seleccionado después de usar la pregunta
-                st.session_state.selected_example = ""
                 with st.spinner("🧠 El asistente está buscando la respuesta..."):
                     try:
                         payload = {"pregunta": pregunta}
@@ -2095,9 +2060,7 @@ def main():
         ]
         
         for i, ejemplo in enumerate(ejemplos, 1):
-            if st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True):
-                st.session_state.selected_example = ejemplo
-                st.rerun()
+            st.button(f"📝 {ejemplo}", key=f"ejemplo_{i}", use_container_width=True, disabled=True)
         
         st.markdown("---")
         
