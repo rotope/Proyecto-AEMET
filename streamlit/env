@@ -1,9 +1,0 @@
-# Configuración de Base de Datos PostgreSQL AWS RDS
-DB_HOST=aemet-database.cfe82wommpd1.eu-north-1.rds.amazonaws.com
-DB_DATABASE=postgres
-DB_USER=postgres
-DB_PASSWORD=Hackaboss123
-DB_PORT=5432
-
-# Configuración de API IA
-API_URL=http://16.171.198.191:8000
